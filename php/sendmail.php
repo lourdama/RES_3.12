@@ -48,7 +48,7 @@ try {
     $mail->Host = 'mail.infomaniak.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'contact@mattys-ldt.fr';   
-    $mail->Password = 'C0nt@ctM€!';      // Trop bien de laisser le mot de passe ici          
+    $mail->Password = '';      // Trop bien de laisser le mot de passe ici          
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
 

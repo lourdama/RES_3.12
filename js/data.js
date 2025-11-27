@@ -158,7 +158,7 @@ const portfolioData = {
             tags: ["HTML", "CSS", "JS"],
             thumb: "project/p4/ph/ph_pf1.webp",
             summary: "A fully custom responsive portfolio — animations, neural background, and soft neon design.",
-            github: "https://github.com/lourdama/SAE_2.07-Portfolio",
+            github: "https://github.com/lourdama/RES_3.12",
             date: "October 2025 – Present",
             description: "A fully handcrafted personal portfolio designed to showcase my skills, academic projects, and experience. The site includes custom animations, a neural-network inspired animated background, light/dark mode, responsive design, project galleries, and an overall soft neon art direction.",
             gallery: [

@@ -187,7 +187,7 @@ function renderHomePage(scrollToProjects = false) {
             <section id="contact" class="section contact">
                 <h3 class="section-title" data-text="Contact"></h3>
                 <p class="muted" style="margin-bottom:20px;">Email me for collaboration, internships, or project inquiries</p>
-                <form id="contact-form">
+                <form id="contact-form" onsubmit="event.preventDefault();alert('Form not working: go to https://mattys-ldt.fr');">
                     <input type="text" name="website" style="display:none;">
                     <input name="name" placeholder="Name" required>
                     <input name="email" type="email" placeholder="Email" required>
@@ -202,7 +202,7 @@ function renderHomePage(scrollToProjects = false) {
         </main>`;
 
     initEffects();
-    initContactForm();
+    // initContactForm();
     
     if(scrollToProjects) {
         setTimeout(() => document.getElementById('projects')?.scrollIntoView({behavior:'auto'}), 10);

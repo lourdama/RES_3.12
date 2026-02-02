@@ -21,7 +21,7 @@ if (!empty($_POST['website'])) {
 }
 
 $ip = $_SERVER['REMOTE_ADDR'];
-$limit = 1; 
+$limit = 1;
 $storage = sys_get_temp_dir() . "/contact_" . md5($ip);
 
 if (file_exists($storage) && time() - filemtime($storage) < 60) {
@@ -47,15 +47,15 @@ try {
     $mail->isSMTP();
     $mail->Host = 'mail.infomaniak.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'contact@mattys-ldt.fr';   
-    $mail->Password = 'C0nt@ctM€!';      // Trop bien de laisser le mot de passe ici          
+    $mail->Username = 'contact@mattys-ldt.fr';
+    $mail->Password = '';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
 
-    $mail->setFrom('contact@mattys-ldt.fr', 'Portfolio Contact');  
-    $mail->addAddress('mattys.lourdault@etu.univ-smb.fr');  
+    $mail->setFrom('contact@mattys-ldt.fr', 'Portfolio Contact');
+    $mail->addAddress('mattys.lourdault@etu.univ-smb.fr');
 
-    
+
     $mail->isHTML(true);
     $mail->Subject = "New contact form message";
     $mail->Body = "

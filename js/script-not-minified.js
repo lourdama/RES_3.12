@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    portfolioData.currentLang = localStorage.getItem('lang') || 'fr';
+
     initData();
     initTheme();
-    initCanvas(); 
+    initCanvas();
 
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
@@ -12,29 +14,85 @@ document.addEventListener('DOMContentLoaded', () => {
     if (projId) { loadProject(projId); } else { renderHomePage(false); }
 });
 
+function t(obj) {
+    return getText(obj, portfolioData.currentLang);
+}
+
+function L() {
+    return portfolioData.labels[portfolioData.currentLang];
+}
+
+function P() {
+    return portfolioData.profile[portfolioData.currentLang];
+}
+
 function initData() {
-    const p = portfolioData.profile;
+    const p = P();
     document.getElementById('header-name').textContent = p.name;
     document.getElementById('header-role').textContent = p.role;
-    
+
     const controls = document.getElementById('header-controls');
+    const currentLang = portfolioData.currentLang;
+
     controls.innerHTML = `
-        <a class="icon-btn" href="${p.cvLink}" target="_blank" title="Download CV"><i data-lucide="file-down"></i></a>
+        <div class="cv-dropdown">
+            <button class="icon-btn" id="cv-btn" title="${L().downloadCV}"><i data-lucide="file-down"></i></button>
+            <div class="cv-menu" id="cv-menu">
+                <a href="${portfolioData.cvLinks.fr.url}" target="_blank">${portfolioData.cvLinks.fr.label}</a>
+                <a href="${portfolioData.cvLinks.intFr.url}" target="_blank">${portfolioData.cvLinks.intFr.label}</a>
+                <a href="${portfolioData.cvLinks.intEn.url}" target="_blank">${portfolioData.cvLinks.intEn.label}</a>
+            </div>
+        </div>
         <a class="icon-btn" href="mailto:${p.email}" title="Email"><i data-lucide="mail"></i></a>
         <a class="icon-btn" href="${p.github}" target="_blank" title="GitHub"><i data-lucide="github"></i></a>
         <a class="icon-btn" href="${p.linkedin}" target="_blank" title="LinkedIn"><i data-lucide="linkedin"></i></a>
+        <button id="lang-toggle" class="icon-btn lang-btn" title="Language">${currentLang.toUpperCase()}</button>
         <button id="theme-toggle" class="icon-btn" title="Toggle Theme"><i data-lucide="sun"></i></button>
     `;
+
+    initCVDropdown();
+    initLangToggle();
     initThemeListeners();
     lucide.createIcons();
 }
 
-/* --- TYPING --- */
+function initCVDropdown() {
+    const cvBtn = document.getElementById('cv-btn');
+    const cvMenu = document.getElementById('cv-menu');
+
+    cvBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cvMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+        cvMenu.classList.remove('show');
+    });
+}
+
+function initLangToggle() {
+    const btn = document.getElementById('lang-toggle');
+    btn.addEventListener('click', () => {
+        const newLang = portfolioData.currentLang === 'fr' ? 'en' : 'fr';
+        portfolioData.currentLang = newLang;
+        localStorage.setItem('lang', newLang);
+        btn.textContent = newLang.toUpperCase();
+
+        const params = new URLSearchParams(window.location.search);
+        const projId = params.get('project');
+        if (projId) { loadProject(projId); } else { renderHomePage(false); }
+
+        const p = P();
+        document.getElementById('header-name').textContent = p.name;
+        document.getElementById('header-role').textContent = p.role;
+    });
+}
+
 function typewrite(el, speed = 100) {
     if (!el || el.dataset.typedDone === "true") return;
     const txt = el.getAttribute('data-text') || el.textContent.trim();
-    el.textContent = ""; 
-    
+    el.textContent = "";
+
     let i = 0;
     function step() {
         if (i <= txt.length) {
@@ -50,7 +108,9 @@ function typewrite(el, speed = 100) {
 
 function renderHomePage(scrollToProjects = false) {
     const app = document.getElementById('app');
-    const p = portfolioData.profile;
+    const p = P();
+    const l = L();
+    const lang = portfolioData.currentLang;
 
     app.innerHTML = `
         <main class="main">
@@ -61,16 +121,23 @@ function renderHomePage(scrollToProjects = false) {
                         <h2 id="typed-hero" data-text="${p.welcomeTitle}"></h2>
                         <p class="lead">${p.welcomeText}</p>
                         <div class="hero-actions">
-                            <a class="btn" href="${p.cvLink}" target="_blank">Download CV</a>
-                            <button class="btn" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">View Projects</button>
-                            <a class="btn outline" href="#contact">Get in Touch</a>
+                            <div class="cv-dropdown-hero">
+                                <button class="btn" id="hero-cv-btn">${l.downloadCV} ▼</button>
+                                <div class="cv-menu-hero" id="hero-cv-menu">
+                                    <a href="${portfolioData.cvLinks.fr.url}" target="_blank">${portfolioData.cvLinks.fr.label}</a>
+                                    <a href="${portfolioData.cvLinks.intFr.url}" target="_blank">${portfolioData.cvLinks.intFr.label}</a>
+                                    <a href="${portfolioData.cvLinks.intEn.url}" target="_blank">${portfolioData.cvLinks.intEn.label}</a>
+                                </div>
+                            </div>
+                            <button class="btn" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">${l.viewProjects}</button>
+                            <a class="btn" href="#contact">${l.getInTouch}</a>
                         </div>
                     </div>
                 </div>
             </section>
 
             <section id="skills" class="section">
-                <h3 class="section-title" data-text="Skills"></h3>
+                <h3 class="section-title" data-text="${l.skills}"></h3>
                 <div class="skills-grid">
                     ${portfolioData.skills.map(s => `
                         <div class="skill">
@@ -82,9 +149,9 @@ function renderHomePage(scrollToProjects = false) {
             </section>
 
             <section id="projects" class="section">
-                <h3 class="section-title" data-text="Projects"></h3>
+                <h3 class="section-title" data-text="${l.projects}"></h3>
                 <div class="project-filters">
-                    <button class="btn-filter active" data-filter="all">All</button>
+                    <button class="btn-filter active" data-filter="all">${l.all}</button>
                     <button class="btn-filter" data-filter="csharp">C# / WPF</button>
                     <button class="btn-filter" data-filter="html">HTML / CSS</button>
                     <button class="btn-filter" data-filter="php">PHP / Laravel</button>
@@ -96,14 +163,14 @@ function renderHomePage(scrollToProjects = false) {
                             <div class="thumb" style="background-image:url('${proj.thumb}')"></div>
                             <div class="info">
                                 <div class="info-header">
-                                    <h4>${proj.title}</h4>
-                                    <span class="proj-status ${proj.statusClass}">${proj.status}</span>
+                                    <h4>${t(proj.title)}</h4>
+                                    <span class="proj-status ${proj.statusClass}">${t(proj.status)}</span>
                                 </div>
-                                <p class="proj-desc">${proj.summary}</p>
-                                <p class="proj-date">${proj.date}</p>
+                                <p class="proj-desc">${t(proj.summary)}</p>
+                                <p class="proj-date">${t(proj.date)}</p>
                                 <div class="info-footer">
-                                    <div class="tags-wrapper">${proj.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-                                    <button class="btn outline small">Details</button>
+                                    <div class="tags-wrapper">${proj.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+                                    <button class="btn outline small">${l.details}</button>
                                 </div>
                             </div>
                         </article>
@@ -112,49 +179,49 @@ function renderHomePage(scrollToProjects = false) {
             </section>
 
             <section id="education" class="section">
-                <h3 class="section-title" data-text="Education"></h3>
+                <h3 class="section-title" data-text="${l.education}"></h3>
                 <div class="card-list">
                     ${portfolioData.education.map(e => `
                         <div class="card">
-                            <span class="card-date">${e.date}</span>
-                            <h4>${e.title}</h4>
-                            <p class="muted">${e.desc}</p>
+                            <span class="card-date">${t(e.date)}</span>
+                            <h4>${t(e.title)}</h4>
+                            <p class="muted">${t(e.desc)}</p>
                         </div>
                     `).join('')}
                 </div>
             </section>
 
             <section id="experience" class="section">
-                <h3 class="section-title" data-text="Experiences"></h3>
+                <h3 class="section-title" data-text="${l.experiences}"></h3>
                 <div class="card-list">
                     ${portfolioData.experience.map(e => `
                         <div class="card">
-                            <span class="card-date">${e.date}</span>
-                            <h4>${e.title}</h4>
-                            <p class="muted">${e.desc}</p>
+                            <span class="card-date">${t(e.date)}</span>
+                            <h4>${t(e.title)}</h4>
+                            <p class="muted">${t(e.desc)}</p>
                         </div>
                     `).join('')}
                 </div>
             </section>
 
             <section id="languages" class="section">
-                <h3 class="section-title" data-text="Languages & Soft Skills"></h3>
+                <h3 class="section-title" data-text="${l.languagesSkills}"></h3>
                 <div class="two-col">
                     <div>
-                        <h4>Languages</h4>
-                        <ul>${portfolioData.languages.map(l => `<li>${l}</li>`).join('')}</ul>
+                        <h4>${l.languages}</h4>
+                        <ul>${(portfolioData.languages[lang] || portfolioData.languages.en).map(lang => `<li>${lang}</li>`).join('')}</ul>
                     </div>
                     <div>
-                        <h4>Soft Skills</h4>
-                        <ul>${portfolioData.softSkills.map(s => `<li>${s}</li>`).join('')}</ul>
+                        <h4>${l.softSkills}</h4>
+                        <ul>${(portfolioData.softSkills[lang] || portfolioData.softSkills.en).map(s => `<li>${s}</li>`).join('')}</ul>
                     </div>
                 </div>
             </section>
 
             <section id="hobbies" class="section">
-                <h3 class="section-title" data-text="Hobbies"></h3>
+                <h3 class="section-title" data-text="${l.hobbies}"></h3>
                 <div class="projects-grid">
-                    ${portfolioData.hobbies.map(h => `
+                    ${(portfolioData.hobbies[lang] || portfolioData.hobbies.en).map(h => `
                         <article class="project-tile hobby-tile">
                             <div class="thumb" style="background-image:url('${h.image}')"></div>
                             <div class="info">
@@ -169,13 +236,13 @@ function renderHomePage(scrollToProjects = false) {
             </section>
 
             <section id="references" class="section">
-                <h3 class="section-title" data-text="References"></h3>
+                <h3 class="section-title" data-text="${l.references}"></h3>
                 <div class="card-list">
                     ${portfolioData.references.map(ref => `
                         <div class="card">
                             <h4>${ref.name}</h4>
-                            <p class="muted">${ref.role}</p>
-                            <p class="muted" style="font-size:0.9rem">${ref.place}</p>
+                            <p class="muted">${t(ref.role)}</p>
+                            <p class="muted" style="font-size:0.9rem">${t(ref.place)}</p>
                             <a href="mailto:${ref.email}" class="btn outline small" style="margin-top:10px">
                                 ${ref.email}
                             </a>
@@ -185,51 +252,69 @@ function renderHomePage(scrollToProjects = false) {
             </section>
 
             <section id="contact" class="section contact">
-                <h3 class="section-title" data-text="Contact"></h3>
-                <p class="muted" style="margin-bottom:20px;">Email me for collaboration, internships, or project inquiries</p>
-                <form id="contact-form" onsubmit="event.preventDefault();alert('Form not working: go to https://mattys-ldt.fr');">
+                <h3 class="section-title" data-text="${l.contact}"></h3>
+                <p class="muted" style="margin-bottom:20px;">${l.contactDesc}</p>
+                <form id="contact-form">
                     <input type="text" name="website" style="display:none;">
-                    <input name="name" placeholder="Name" required>
-                    <input name="email" type="email" placeholder="Email" required>
-                    <textarea name="message" rows="5" placeholder="Message" required></textarea>
+                    <input name="name" placeholder="${l.name}" required>
+                    <input name="email" type="email" placeholder="${l.emailPlaceholder}" required>
+                    <textarea name="message" rows="5" placeholder="${l.messagePlaceholder}" required></textarea>
                     <div class="form-row">
-                        <button class="btn" type="submit">Send Message</button>
+                        <button class="btn" type="submit">${l.sendMessage}</button>
                     </div>
                 </form>
             </section>
 
-            <footer class="footer">© ${new Date().getFullYear()} Mattys Lourdault</footer>
+            <footer class="footer">© ${new Date().getFullYear()} Mattys BEAUFORT LOURDAULT</footer>
         </main>`;
 
     initEffects();
-    // initContactForm();
-    
-    if(scrollToProjects) {
-        setTimeout(() => document.getElementById('projects')?.scrollIntoView({behavior:'auto'}), 10);
+    initContactForm();
+    initHeroCVDropdown();
+
+    if (scrollToProjects) {
+        setTimeout(() => document.getElementById('projects')?.scrollIntoView({ behavior: 'auto' }), 10);
     } else {
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
     }
 }
 
-window.loadProject = function(id) {
+function initHeroCVDropdown() {
+    const cvBtn = document.getElementById('hero-cv-btn');
+    const cvMenu = document.getElementById('hero-cv-menu');
+
+    if (cvBtn && cvMenu) {
+        cvBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cvMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', () => {
+            cvMenu.classList.remove('show');
+        });
+    }
+}
+
+window.loadProject = function (id) {
     const proj = portfolioData.projects.find(p => p.id === id);
     if (!proj) return;
     const app = document.getElementById('app');
-    
+    const l = L();
+
     app.innerHTML = `
         <main class="main centered">
             <section class="section project-single fadein visible" style="margin-top: 40px;">
                 <div style="margin-bottom: 20px;">
-                    <button onclick="renderHomePage(true)" class="btn outline small">← Back to Projects</button>
+                    <button onclick="renderHomePage(true)" class="btn outline small">${l.backToProjects}</button>
                 </div>
                 
                 <div class="project-top card">
-                    <h2 class="section-title" data-text="${proj.title}"></h2>
-                    <p class="card-date">${proj.date}</p>
-                    <p class="muted">${proj.description}</p>
+                    <h2 class="section-title" data-text="${t(proj.title)}"></h2>
+                    <p class="card-date">${t(proj.date)}</p>
+                    <p class="muted">${t(proj.description)}</p>
                     <div class="project-meta-row">
                         <div class="tags-wrapper">
-                            ${proj.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                            ${proj.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                         <div class="proj-cta">
                             ${proj.github ? `<a href="${proj.github}" target="_blank" class="btn outline">GitHub</a>` : ''}
@@ -239,26 +324,26 @@ window.loadProject = function(id) {
 
                 <div class="project-layout">
                     <div class="project-gallery">
-                        <h3 class="section-title" style="text-align:left;" data-text="Gallery"></h3>
+                        <h3 class="section-title" style="text-align:left;" data-text="${l.gallery}"></h3>
                         ${proj.gallery.map(img => `
                             <div class="gthumb" 
                                  style="background-image:url('${img.src}')" 
-                                 onclick="openLightbox('${img.src}','${img.caption}')">
+                                 onclick="openLightbox('${img.src}','${t(img.caption)}')">
                             </div>
                         `).join('')}
                     </div>
                     <div class="project-details card fadein">
                         ${proj.detailsSections.map(s => `
-                            <h4>${s.title}</h4>
-                            ${s.text ? `<p class="muted">${s.text}</p>` : ''}
-                            ${s.list ? `<ul class="muted">${s.list.map(l=>`<li>${l}</li>`).join('')}</ul>` : ''}
+                            <h4>${t(s.title)}</h4>
+                            ${s.text ? `<p class="muted">${t(s.text)}</p>` : ''}
+                            ${s.list ? `<ul class="muted">${(t(s.list) || []).map(item => `<li>${item}</li>`).join('')}</ul>` : ''}
                         `).join('')}
                     </div>
                 </div>
             </section>
-            <footer class="footer">© ${new Date().getFullYear()} Mattys Lourdault</footer>
+            <footer class="footer">© ${new Date().getFullYear()} Mattys BEAUFORT LOURDAULT</footer>
         </main>`;
-    
+
     setTimeout(() => {
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
@@ -271,22 +356,22 @@ window.loadProject = function(id) {
 
 function initEffects() {
     const hero = document.getElementById('typed-hero');
-    if(hero) typewrite(hero, 40);
-    
+    if (hero) typewrite(hero, 40);
+
     const obs = new IntersectionObserver(entries => {
         entries.forEach(e => {
-            if(e.isIntersecting) {
+            if (e.isIntersecting) {
                 e.target.classList.add('visible');
                 const t = e.target.querySelector('.section-title');
-                if(t) typewrite(t, 100);
+                if (t) typewrite(t, 100);
             }
         });
-    }, {threshold: 0.1});
+    }, { threshold: 0.1 });
     document.querySelectorAll('.section').forEach(s => obs.observe(s));
 
     const barObs = new IntersectionObserver(entries => {
         entries.forEach(e => {
-            if(e.isIntersecting) {
+            if (e.isIntersecting) {
                 const l = e.target.getAttribute('data-level');
                 e.target.querySelector('.bar-fill').style.width = l + "%";
             }
@@ -333,7 +418,7 @@ function initTheme() {
     document.body.setAttribute('data-theme', s);
 }
 
-window.openLightbox = function(src, cap) {
+window.openLightbox = function (src, cap) {
     const m = document.getElementById('img-modal');
     document.getElementById('img-modal-content').src = src;
     document.getElementById('img-modal-caption').textContent = cap;
@@ -357,7 +442,7 @@ function initContactForm() {
             const json = await res.json();
             if (json.success) { alert("Message sent successfully!"); form.reset(); }
             else { alert("Error sending message."); }
-        } catch(e) { alert("Error sending message."); }
+        } catch (e) { alert("Error sending message."); }
     });
 }
 
@@ -366,24 +451,24 @@ function initCanvas() {
     if (!c) return;
     const ctx = c.getContext('2d');
     let W = c.width = innerWidth, H = c.height = innerHeight;
-    window.addEventListener('resize', () => { W = c.width = innerWidth; H = c.height = innerHeight; nodes=[]; build(); });
-    
+    window.addEventListener('resize', () => { W = c.width = innerWidth; H = c.height = innerHeight; nodes = []; build(); });
+
     const colors = {
-        dark: {g1:'rgba(1,3,8,0.02)', g2:'rgba(1,3,8,0.06)', l1:'51,170,255', dot:'180,230,255'},
-        light: {g1:'rgba(200,220,255,0.1)', g2:'rgba(200,220,255,0.2)', l1:'0,80,180', dot:'0,70,150'}
+        dark: { g1: 'rgba(1,3,8,0.02)', g2: 'rgba(1,3,8,0.06)', l1: '51,170,255', dot: '180,230,255' },
+        light: { g1: 'rgba(200,220,255,0.1)', g2: 'rgba(200,220,255,0.2)', l1: '0,80,180', dot: '0,70,150' }
     };
-    
+
     let nodes = [];
     function build() {
-        const space = Math.max(60, Math.floor(Math.min(W,H)/10));
-        for(let r=0; r<=Math.ceil(H/space); r++) {
-            for(let k=0; k<=Math.ceil(W/space); k++) {
+        const space = Math.max(60, Math.floor(Math.min(W, H) / 10));
+        for (let r = 0; r <= Math.ceil(H / space); r++) {
+            for (let k = 0; k <= Math.ceil(W / space); k++) {
                 nodes.push({
-                    x: k*space + (Math.random()*2-1)*space*0.35,
-                    y: r*space + (Math.random()*2-1)*space*0.35,
-                    ox: k*space + (Math.random()*2-1)*space*0.35,
-                    oy: r*space + (Math.random()*2-1)*space*0.35,
-                    r: 0.8+Math.random()*1.8
+                    x: k * space + (Math.random() * 2 - 1) * space * 0.35,
+                    y: r * space + (Math.random() * 2 - 1) * space * 0.35,
+                    ox: k * space + (Math.random() * 2 - 1) * space * 0.35,
+                    oy: r * space + (Math.random() * 2 - 1) * space * 0.35,
+                    r: 0.8 + Math.random() * 1.8
                 });
             }
         }
@@ -392,28 +477,28 @@ function initCanvas() {
 
     function loop(now) {
         const th = document.body.getAttribute('data-theme') || 'dark';
-        const col = colors[th==='light'?'light':'dark'];
-        ctx.clearRect(0,0,W,H);
-        const g = ctx.createLinearGradient(0,0,W,H);
+        const col = colors[th === 'light' ? 'light' : 'dark'];
+        ctx.clearRect(0, 0, W, H);
+        const g = ctx.createLinearGradient(0, 0, W, H);
         g.addColorStop(0, col.g1); g.addColorStop(1, col.g2);
-        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
         nodes.forEach((n, i) => {
             const t = now * 0.0007 + i;
-            n.x = n.ox + Math.sin(t*1.1)*6 + Math.cos(t*0.7)*4;
-            n.y = n.oy + Math.cos(t*1.3)*6 + Math.sin(t*0.5)*4;
-            for(let j=i+1; j<nodes.length; j++){
+            n.x = n.ox + Math.sin(t * 1.1) * 6 + Math.cos(t * 0.7) * 4;
+            n.y = n.oy + Math.cos(t * 1.3) * 6 + Math.sin(t * 0.5) * 4;
+            for (let j = i + 1; j < nodes.length; j++) {
                 const n2 = nodes[j];
-                const d = Math.hypot(n.x-n2.x, n.y-n2.y);
-                if(d < 140) {
+                const d = Math.hypot(n.x - n2.x, n.y - n2.y);
+                if (d < 140) {
                     ctx.beginPath();
-                    ctx.lineWidth = 6 * (1-d/140);
-                    ctx.strokeStyle = `rgba(${col.l1},${(1-d/140)*0.06})`;
+                    ctx.lineWidth = 6 * (1 - d / 140);
+                    ctx.strokeStyle = `rgba(${col.l1},${(1 - d / 140) * 0.06})`;
                     ctx.moveTo(n.x, n.y); ctx.lineTo(n2.x, n2.y); ctx.stroke();
                 }
             }
             ctx.beginPath(); ctx.fillStyle = `rgba(${col.dot},0.5)`;
-            ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); ctx.fill();
+            ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
         });
         requestAnimationFrame(loop);
     }

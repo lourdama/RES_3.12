@@ -156,6 +156,7 @@ function renderHomePage(scrollToProjects = false) {
                     <button class="btn-filter" data-filter="html">HTML / CSS</button>
                     <button class="btn-filter" data-filter="php">PHP / Laravel</button>
                     <button class="btn-filter" data-filter="javascript">JavaScript / Phaser</button>
+                    <button class="btn-filter" data-filter="iot">IoT</button>
                 </div>
                 <div class="projects-grid">
                     ${portfolioData.projects.map(proj => `
@@ -325,12 +326,22 @@ window.loadProject = function (id) {
                 <div class="project-layout">
                     <div class="project-gallery">
                         <h3 class="section-title" style="text-align:left;" data-text="${l.gallery}"></h3>
-                        ${proj.gallery.map(img => `
-                            <div class="gthumb" 
-                                 style="background-image:url('${img.src}')" 
-                                 onclick="openLightbox('${img.src}','${t(img.caption)}')">
-                            </div>
-                        `).join('')}
+                        ${proj.gallery.map(media => {
+                            if (media.type === 'video') {
+                                return `
+                                <div class="gthumb video-thumb" 
+                                     style="background-image:url('${media.thumb || media.src}')" 
+                                     onclick="openLightbox('${media.src}','${t(media.caption)}', 'video')">
+                                     <i data-lucide="play-circle" class="play-icon"></i>
+                                </div>`;
+                            } else {
+                                return `
+                                <div class="gthumb" 
+                                     style="background-image:url('${media.src}')" 
+                                     onclick="openLightbox('${media.src}','${t(media.caption)}', 'image')">
+                                </div>`;
+                            }
+                        }).join('')}
                     </div>
                     <div class="project-details card fadein">
                         ${proj.detailsSections.map(s => `
@@ -418,17 +429,36 @@ function initTheme() {
     document.body.setAttribute('data-theme', s);
 }
 
-window.openLightbox = function (src, cap) {
+window.openLightbox = function (src, cap, type = 'image') {
     const m = document.getElementById('img-modal');
-    document.getElementById('img-modal-content').src = src;
+    const imgEl = document.getElementById('img-modal-content');
+    const vidEl = document.getElementById('video-modal-content');
+    
+    if (type === 'video') {
+        imgEl.style.display = 'none';
+        vidEl.style.display = 'block';
+        vidEl.src = src;
+        vidEl.play();
+    } else {
+        vidEl.style.display = 'none';
+        vidEl.pause();
+        imgEl.style.display = 'block';
+        imgEl.src = src;
+    }
+    
     document.getElementById('img-modal-caption').textContent = cap;
     m.classList.add('visible');
     m.style.pointerEvents = 'all';
 }
+
 document.getElementById('img-modal-close').addEventListener('click', () => {
     const m = document.getElementById('img-modal');
+    const vidEl = document.getElementById('video-modal-content');
     m.classList.remove('visible');
     m.style.pointerEvents = 'none';
+    vidEl.pause(); 
+    vidEl.removeAttribute('src'); 
+    vidEl.load(); 
 });
 
 function initContactForm() {

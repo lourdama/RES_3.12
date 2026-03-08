@@ -184,7 +184,7 @@ const portfolioData = {
                 fr: "Projet d'équipe Agile — Application web Laravel avec modélisation UML et conformité RGPD (Privacy by Design).",
                 en: "Agile team project — Laravel web application with UML modeling and GDPR (Privacy by Design) compliance."
             },
-            github: "https://github.com/lourdama/SAE_3.01-Hunimalis",
+            github: "https://github.com/lourdama/SAE_3.01-Hunimalis-public",
             date: { fr: "Octobre 2025 – Janvier 2026", en: "October 2025 – January 2026" },
             description: {
                 fr: "Un projet académique collaboratif axé sur la conception et la création d'une application web fictive complète basée sur l'entreprise : <strong>Hunimalis</strong>. Le développement suit une approche Agile (SCRUM) avec des sprints itératifs, une modélisation UML et une conformité RGPD par les principes de Privacy by Design.",
@@ -447,6 +447,81 @@ const portfolioData = {
                             "Phaser 3 Framework (Physics, Sprites, Audio)",
                             "Vanilla JavaScript",
                             "Asset management (Audio/Visual resources)"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            id: "p6",
+            title: { fr: "PeakPulse – Station de ski intelligente", en: "PeakPulse – Smart Ski Resort" },
+            status: { fr: "Terminé", en: "Completed" },
+            statusClass: "finished",
+            category: ["html", "css", "php", "javascript", "python", "arduino", "sql", "iot"],
+            tags: ["Arduino", "Python", "PHP", "SQL", "Web"],
+            thumb: "project/p6/ph/ph_peakpulse1.webp",
+            summary: {
+                fr: "Projet de fin d'études STI2D — Système IoT complet pour la gestion intelligente d'une station de ski (Portique, BDD, Dashboard Web).",
+                en: "STI2D final project — Complete IoT system for smart ski resort management (Gate, Database, Web Dashboard)."
+            },
+            github: "https://github.com/lourdama/PeakPulse",
+            date: { fr: "Printemps 2024", en: "Spring 2024" },
+            description: {
+                fr: "Projet de terminale STI2D (spécialité SIN) développé en binôme. <strong>PeakPulse</strong> est une maquette fonctionnelle de station de ski intelligente exploitant l'IoT pour optimiser l'énergie en fonction de l'affluence. J'étais en charge de la conception matérielle du <strong>portique de remontée mécanique (Arduino, RFID, Servomoteur)</strong>, de l'architecture de la <strong>base de données MySQL</strong>, et du développement de <strong>l'interface web administrateur en PHP</strong>.",
+                en: "Senior high school project (STI2D SIN) developed in pairs. <strong>PeakPulse</strong> is a functional smart ski resort mockup using IoT to optimize energy based on crowds. I was responsible for the hardware design of the <strong>ski lift gate (Arduino, RFID, Servomotor)</strong>, the <strong>MySQL database</strong> architecture, and developing the <strong>PHP admin web interface</strong>."
+            },
+            gallery: [
+                { src: "project/p6/img/peakpulse1.webp", caption: { fr: "Dashboard Administrateur Web", en: "Web Admin Dashboard" } },
+                { src: "project/p6/img/peakpulse2.webp", caption: { fr: "Maquette du portique Arduino", en: "Arduino gate mockup" } },
+                { src: "project/p6/img/peakpulse3.webp", caption: { fr: "Base de données", en: "Database" } },
+                { 
+                    type: "video", 
+                    src: "project/p6/vid/peakpulse1.mp4", 
+                    thumb: "project/p6/img/peakpulse4.webp", 
+                    caption: { fr: "Démonstration vidéo", en: "Video demonstration" } 
+                }
+            ],
+            detailsSections: [
+                {
+                    title: { fr: "À propos du projet", en: "About the Project" },
+                    text: {
+                        fr: "L'objectif principal de PeakPulse était d'étudier l'économie d'énergie permise par la gestion intelligente de la vitesse des remontées mécaniques selon l'affluence. Le système fournit un écosystème autonome limitant l'intervention humaine, tout en informant sur l'état des pistes, la météo et l'affluence via une interface centralisée.",
+                        en: "The main goal of PeakPulse was to study the energy savings achieved by intelligently managing ski lift speeds based on crowd density. The system provides an autonomous ecosystem limiting human intervention, while providing information on slope conditions, weather, and crowds via a centralized interface."
+                    }
+                },
+                {
+                    title: { fr: "Mes missions principales", en: "My Core Responsibilities" },
+                    list: {
+                        fr: [
+                            "Réalisation et test d'un portique Arduino (Écran LCD I2C, IR, RFID, LED RGB, Servomoteur)",
+                            "Développement de scripts Python assurant la communication bidirectionnelle entre l'Arduino et la base de données",
+                            "Mise en place de la base de données MySQL pour le stockage des forfaits et des mesures",
+                            "Création d'un site web applicatif (PHP) permettant à l'administrateur de lire et modifier les informations de la station"
+                        ],
+                        en: [
+                            "Creation and testing of an Arduino gate (I2C LCD, IR, RFID, RGB LED, Servomotor)",
+                            "Development of Python scripts ensuring bidirectional communication between Arduino and the database",
+                            "Setup of the MySQL database to store ski passes and sensor measurements",
+                            "Creation of a web application (PHP) allowing the admin to read and modify resort information"
+                        ]
+                    }
+                },
+                {
+                    title: { fr: "Stack Technique", en: "Technical Stack" },
+                    list: {
+                        fr: [
+                            "Matériel : Arduino Uno/Mega, Lecteur RFID, Capteurs IoT divers",
+                            "Logiciel embarqué : C++ (IDE Arduino)",
+                            "Middleware : Scripts Python (Port série & connecteurs SQL)",
+                            "Back-end & Base de données : PHP natif, requêtes SQL, MySQL",
+                            "Front-end : HTML, CSS, JavaScript (Dashboard)"
+                        ],
+                        en: [
+                            "Hardware: Arduino Uno/Mega, RFID Reader, various IoT sensors",
+                            "Embedded Software: C++ (Arduino IDE)",
+                            "Middleware: Python scripts (Serial port & SQL connectors)",
+                            "Backend & Database: Native PHP, SQL queries, MySQL",
+                            "Frontend: HTML, CSS, JavaScript (Dashboard)"
                         ]
                     }
                 }
